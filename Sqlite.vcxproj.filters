@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="src\global.c">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\malloc.c">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mem0.c">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mem1.c">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mem2.c">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mem3.c">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mem5.c">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mutex.c">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mutex_noop.c">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mutex_w32.c">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\notify.c">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\printf.c">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\util.c">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\os_win.c">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sqlite.c">
+      <Filter>Header</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.c">
+      <Filter>Src</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Src">
+      <UniqueIdentifier>{8f951061-8794-4771-822a-7db066dd1ee8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header">
+      <UniqueIdentifier>{973a7419-43be-438d-9832-24ef5620cdaf}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\hwtime.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\mutex.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\os.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\os_common.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sqlite3ext.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sqliteInt.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\sqliteLimit.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
