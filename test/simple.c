@@ -7,9 +7,11 @@ int main(void)
     void *p = sqlite3Malloc(100);
     if (!p)
     {
-        printf("Not a valid library.\n");
+        printf("Malloc failed\n");
         return -1;
     }
+
+    sqlite3_free(p);
 
     sqlite3MallocEnd();
 
