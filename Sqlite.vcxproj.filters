@@ -31,13 +31,7 @@
     <ClCompile Include="src\mutex_w32.c">
       <Filter>Src</Filter>
     </ClCompile>
-    <ClCompile Include="src\notify.c">
-      <Filter>Src</Filter>
-    </ClCompile>
     <ClCompile Include="src\printf.c">
-      <Filter>Src</Filter>
-    </ClCompile>
-    <ClCompile Include="src\util.c">
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="src\os_win.c">
@@ -47,6 +41,9 @@
       <Filter>Header</Filter>
     </ClCompile>
     <ClCompile Include="src\main.c">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="test\simple.c">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>

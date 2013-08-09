@@ -702,40 +702,6 @@ void *sqlite3DbReallocOrFree(sqlite3 *db, void *p, int n){
   return pNew;
 }
 
-/*
-** Make a copy of a string in memory obtained from sqliteMalloc(). These 
-** functions call sqlite3MallocRaw() directly instead of sqliteMalloc(). This
-** is because when memory debugging is turned on, these two functions are 
-** called via macros that record the current file and line number in the
-** ThreadData structure.
-*/
-char *sqlite3DbStrDup(sqlite3 *db, const char *z){
-  char *zNew;
-  size_t n;
-  if( z==0 ){
-    return 0;
-  }
-  n = sqlite3Strlen30(z) + 1;
-  assert( (n&0x7fffffff)==n );
-  zNew = sqlite3DbMallocRaw(db, (int)n);
-  if( zNew ){
-    memcpy(zNew, z, n);
-  }
-  return zNew;
-}
-char *sqlite3DbStrNDup(sqlite3 *db, const char *z, int n){
-  char *zNew;
-  if( z==0 ){
-    return 0;
-  }
-  assert( (n&0x7fffffff)==n );
-  zNew = sqlite3DbMallocRaw(db, n+1);
-  if( zNew ){
-    memcpy(zNew, z, n);
-    zNew[n] = 0;
-  }
-  return zNew;
-}
 
 /*
 ** Create a string from the zFromat argument and the va_list that follows.
@@ -743,40 +709,6 @@ char *sqlite3DbStrNDup(sqlite3 *db, const char *z, int n){
 ** point to that string.
 */
 void sqlite3SetString(char **pz, sqlite3 *db, const char *zFormat, ...){
-  va_list ap;
-  char *z;
-
-  va_start(ap, zFormat);
-  z = sqlite3VMPrintf(db, zFormat, ap);
-  va_end(ap);
-  sqlite3DbFree(db, *pz);
-  *pz = z;
+ 
 }
 
-
-/*
-** This function must be called before exiting any API function (i.e. 
-** returning control to the user) that has called sqlite3_malloc or
-** sqlite3_realloc.
-**
-** The returned value is normally a copy of the second argument to this
-** function. However, if a malloc() failure has occurred since the previous
-** invocation SQLITE_NOMEM is returned instead. 
-**
-** If the first argument, db, is not NULL and a malloc() error has occurred,
-** then the connection error-code (the value returned by sqlite3_errcode())
-** is set to SQLITE_NOMEM.
-*/
-int sqlite3ApiExit(sqlite3* db, int rc){
-  /* If the db handle is not NULL, then we must hold the connection handle
-  ** mutex here. Otherwise the read (and possible write) of db->mallocFailed 
-  ** is unsafe, as is the call to sqlite3Error().
-  */
-  assert( !db || sqlite3_mutex_held(db->mutex) );
-  if( db && (db->mallocFailed || rc==SQLITE_IOERR_NOMEM) ){
-    sqlite3Error(db, SQLITE_NOMEM, 0);
-    db->mallocFailed = 0;
-    rc = SQLITE_NOMEM;
-  }
-  return rc & (db ? db->errMask : 0xff);
-}

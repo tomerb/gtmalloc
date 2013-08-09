@@ -1434,77 +1434,6 @@ int sqlite3_win32_set_directory(DWORD type, LPCWSTR zValue){
 ** otherwise (if the message was truncated).
 */
 static int getLastErrorMsg(DWORD lastErrno, int nBuf, char *zBuf){
-  /* FormatMessage returns 0 on failure.  Otherwise it
-  ** returns the number of TCHARs written to the output
-  ** buffer, excluding the terminating null char.
-  */
-  DWORD dwLen = 0;
-  char *zOut = 0;
-
-  if( isNT() ){
-#if SQLITE_OS_WINRT
-    WCHAR zTempWide[MAX_PATH+1]; /* NOTE: Somewhat arbitrary. */
-    dwLen = osFormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM |
-                             FORMAT_MESSAGE_IGNORE_INSERTS,
-                             NULL,
-                             lastErrno,
-                             0,
-                             zTempWide,
-                             MAX_PATH,
-                             0);
-#else
-    LPWSTR zTempWide = NULL;
-    dwLen = osFormatMessageW(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-                             FORMAT_MESSAGE_FROM_SYSTEM |
-                             FORMAT_MESSAGE_IGNORE_INSERTS,
-                             NULL,
-                             lastErrno,
-                             0,
-                             (LPWSTR) &zTempWide,
-                             0,
-                             0);
-#endif
-    if( dwLen > 0 ){
-      /* allocate a buffer and convert to UTF8 */
-      sqlite3BeginBenignMalloc();
-      zOut = unicodeToUtf8(zTempWide);
-      sqlite3EndBenignMalloc();
-#if !SQLITE_OS_WINRT
-      /* free the system buffer allocated by FormatMessage */
-      osLocalFree(zTempWide);
-#endif
-    }
-  }
-#ifdef SQLITE_WIN32_HAS_ANSI
-  else{
-    char *zTemp = NULL;
-    dwLen = osFormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER |
-                             FORMAT_MESSAGE_FROM_SYSTEM |
-                             FORMAT_MESSAGE_IGNORE_INSERTS,
-                             NULL,
-                             lastErrno,
-                             0,
-                             (LPSTR) &zTemp,
-                             0,
-                             0);
-    if( dwLen > 0 ){
-      /* allocate a buffer and convert to UTF8 */
-      sqlite3BeginBenignMalloc();
-      zOut = sqlite3_win32_mbcs_to_utf8(zTemp);
-      sqlite3EndBenignMalloc();
-      /* free the system buffer allocated by FormatMessage */
-      osLocalFree(zTemp);
-    }
-  }
-#endif
-  if( 0 == dwLen ){
-    sqlite3_snprintf(nBuf, zBuf, "OsError 0x%lx (%lu)", lastErrno, lastErrno);
-  }else{
-    /* copy a maximum of nBuf chars to output buffer */
-    sqlite3_snprintf(nBuf, zBuf, "%s", zOut);
-    /* free the UTF8 buffer */
-    sqlite3_free(zOut);
-  }
   return 0;
 }
 
@@ -3936,44 +3865,6 @@ static int winAccess(
   OSTRACE(("ACCESS name=%s, pResOut=%p, *pResOut=%d, rc=SQLITE_OK\n",
            zFilename, pResOut, *pResOut));
   return SQLITE_OK;
-}
-
-
-/*
-** Returns non-zero if the specified path name should be used verbatim.  If
-** non-zero is returned from this function, the calling function must simply
-** use the provided path name verbatim -OR- resolve it into a full path name
-** using the GetFullPathName Win32 API function (if available).
-*/
-static BOOL winIsVerbatimPathname(
-  const char *zPathname
-){
-  /*
-  ** If the path name starts with a forward slash or a backslash, it is either
-  ** a legal UNC name, a volume relative path, or an absolute path name in the
-  ** "Unix" format on Windows.  There is no easy way to differentiate between
-  ** the final two cases; therefore, we return the safer return value of TRUE
-  ** so that callers of this function will simply use it verbatim.
-  */
-  if ( zPathname[0]=='/' || zPathname[0]=='\\' ){
-    return TRUE;
-  }
-
-  /*
-  ** If the path name starts with a letter and a colon it is either a volume
-  ** relative path or an absolute path.  Callers of this function must not
-  ** attempt to treat it as a relative path name (i.e. they should simply use
-  ** it verbatim).
-  */
-  if ( sqlite3Isalpha(zPathname[0]) && zPathname[1]==':' ){
-    return TRUE;
-  }
-
-  /*
-  ** If we get to this point, the path name should almost certainly be a purely
-  ** relative one (i.e. not a UNC name, not absolute, and not volume relative).
-  */
-  return FALSE;
 }
 
 /*

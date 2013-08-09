@@ -45,11 +45,11 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);SQLITE_ENABLE_MEMSYS5</PreprocessorDefinitions>
+      <CompileAs>CompileAsC</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -64,7 +64,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);SQLITE_ENABLE_MEMSYS5</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -75,7 +75,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\global.c" />
-    <ClCompile Include="src\main.c" />
+    <ClCompile Include="src\main.c">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="src\malloc.c" />
     <ClCompile Include="src\mem0.c" />
     <ClCompile Include="src\mem1.c" />
@@ -85,11 +87,10 @@
     <ClCompile Include="src\mutex.c" />
     <ClCompile Include="src\mutex_noop.c" />
     <ClCompile Include="src\mutex_w32.c" />
-    <ClCompile Include="src\notify.c" />
     <ClCompile Include="src\os_win.c" />
     <ClCompile Include="src\printf.c" />
     <ClCompile Include="src\sqlite.c" />
-    <ClCompile Include="src\util.c" />
+    <ClCompile Include="test\simple.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\hwtime.h" />

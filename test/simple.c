@@ -1,10 +1,13 @@
-#include "sqliteInt.h"
+#include "..\Src\sqliteInt.h"
 
 int main(void)
 {
+	void *p;
+
     sqlite3MallocInit();
 
-    void *p = sqlite3Malloc(256);
+    p = sqlite3Malloc(256);
+
     if (!p)
     {
         printf("Malloc failed\n");

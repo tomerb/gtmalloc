@@ -2656,29 +2656,6 @@ int sqlite3CantopenError(int);
 #endif
 
 /*
-** The following macros mimic the standard library functions toupper(),
-** isspace(), isalnum(), isdigit() and isxdigit(), respectively. The
-** sqlite versions only work for ASCII characters, regardless of locale.
-*/
-#ifdef SQLITE_ASCII
-# define sqlite3Toupper(x)  ((x)&~(sqlite3CtypeMap[(unsigned char)(x)]&0x20))
-# define sqlite3Isspace(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x01)
-# define sqlite3Isalnum(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x06)
-# define sqlite3Isalpha(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x02)
-# define sqlite3Isdigit(x)   (sqlite3CtypeMap[(unsigned char)(x)]&0x04)
-# define sqlite3Isxdigit(x)  (sqlite3CtypeMap[(unsigned char)(x)]&0x08)
-# define sqlite3Tolower(x)   (sqlite3UpperToLower[(unsigned char)(x)])
-#else
-# define sqlite3Toupper(x)   toupper((unsigned char)(x))
-# define sqlite3Isspace(x)   isspace((unsigned char)(x))
-# define sqlite3Isalnum(x)   isalnum((unsigned char)(x))
-# define sqlite3Isalpha(x)   isalpha((unsigned char)(x))
-# define sqlite3Isdigit(x)   isdigit((unsigned char)(x))
-# define sqlite3Isxdigit(x)  isxdigit((unsigned char)(x))
-# define sqlite3Tolower(x)   tolower((unsigned char)(x))
-#endif
-
-/*
 ** Internal function prototypes
 */
 #define sqlite3StrICmp sqlite3_stricmp
@@ -2691,8 +2668,6 @@ void *sqlite3Malloc(int);
 void *sqlite3MallocZero(int);
 void *sqlite3DbMallocZero(sqlite3*, int);
 void *sqlite3DbMallocRaw(sqlite3*, int);
-char *sqlite3DbStrDup(sqlite3*,const char*);
-char *sqlite3DbStrNDup(sqlite3*,const char*, int);
 void *sqlite3Realloc(void*, int);
 void *sqlite3DbReallocOrFree(sqlite3 *, void *, int);
 void *sqlite3DbRealloc(sqlite3 *, void *, int);
@@ -3180,7 +3155,7 @@ int sqlite3CreateFunc(sqlite3 *, const char *, int, int, void *,
   void (*)(sqlite3_context*,int,sqlite3_value **), void (*)(sqlite3_context*),
   FuncDestructor *pDestructor
 );
-int sqlite3ApiExit(sqlite3 *db, int);
+
 int sqlite3OpenTempDatabase(Parse *);
 
 void sqlite3StrAccumInit(StrAccum*, char*, int, int);
