@@ -217,10 +217,10 @@ static void memsys3Link(u32 i){
 /*
 ** If the STATIC_MEM mutex is not already held, obtain it now. The mutex
 ** will already be held (obtained by code in malloc.c) if
-** sqlite3GlobalConfig.bMemStat is true.
+** sqlite3Config.bMemStat is true.
 */
 static void memsys3Enter(void){
-  if( sqlite3GlobalConfig.bMemstat==0 && mem3.mutex==0 ){
+  if( sqlite3Config.bMemstat==0 && mem3.mutex==0 ){
     mem3.mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MEM);
   }
   sqlite3_mutex_enter(mem3.mutex);
@@ -551,14 +551,14 @@ static void *memsys3Realloc(void *pPrior, int nBytes){
 */
 static int memsys3Init(void *NotUsed){
   UNUSED_PARAMETER(NotUsed);
-  if( !sqlite3GlobalConfig.pHeap ){
+  if( !sqlite3Config.pHeap ){
     return SQLITE_ERROR;
   }
 
   /* Store a pointer to the memory block in global structure mem3. */
   assert( sizeof(Mem3Block)==8 );
-  mem3.aPool = (Mem3Block *)sqlite3GlobalConfig.pHeap;
-  mem3.nPool = (sqlite3GlobalConfig.nHeap / sizeof(Mem3Block)) - 2;
+  mem3.aPool = (Mem3Block *)sqlite3Config.pHeap;
+  mem3.nPool = (sqlite3Config.nHeap / sizeof(Mem3Block)) - 2;
 
   /* Initialize the master block. */
   mem3.szMaster = mem3.nPool;
@@ -664,7 +664,7 @@ void sqlite3Memsys3Dump(const char *zFilename){
 ** linkage.
 **
 ** Populate the low-level memory allocation function pointers in
-** sqlite3GlobalConfig.m with pointers to the routines in this file. The
+** sqlite3Config.m with pointers to the routines in this file. The
 ** arguments specify the block of memory to manage.
 **
 ** This routine is only called by sqlite3_config(), and therefore

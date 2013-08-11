@@ -31,16 +31,16 @@ static SQLITE_WSD int mutexIsInit = 0;
 */
 int sqlite3MutexInit(void){ 
   int rc = SQLITE_OK;
-  if( !sqlite3GlobalConfig.mutex.xMutexAlloc ){
+  if( !sqlite3Config.mutex.xMutexAlloc ){
     /* If the xMutexAlloc method has not been set, then the user did not
     ** install a mutex implementation via sqlite3_config() prior to 
     ** sqlite3_initialize() being called. This block copies pointers to
-    ** the default implementation into the sqlite3GlobalConfig structure.
+    ** the default implementation into the sqlite3Config structure.
     */
     sqlite3_mutex_methods const *pFrom;
-    sqlite3_mutex_methods *pTo = &sqlite3GlobalConfig.mutex;
+    sqlite3_mutex_methods *pTo = &sqlite3Config.mutex;
 
-    if( sqlite3GlobalConfig.bCoreMutex ){
+    if( sqlite3Config.bCoreMutex ){
       pFrom = sqlite3DefaultMutex();
     }else{
       pFrom = sqlite3NoopMutex();
@@ -50,7 +50,7 @@ int sqlite3MutexInit(void){
            sizeof(*pTo) - offsetof(sqlite3_mutex_methods, xMutexFree));
     pTo->xMutexAlloc = pFrom->xMutexAlloc;
   }
-  rc = sqlite3GlobalConfig.mutex.xMutexInit();
+  rc = sqlite3Config.mutex.xMutexInit();
 
 #ifdef SQLITE_DEBUG
   GLOBAL(int, mutexIsInit) = 1;
@@ -65,8 +65,8 @@ int sqlite3MutexInit(void){
 */
 int sqlite3MutexEnd(void){
   int rc = SQLITE_OK;
-  if( sqlite3GlobalConfig.mutex.xMutexEnd ){
-    rc = sqlite3GlobalConfig.mutex.xMutexEnd();
+  if( sqlite3Config.mutex.xMutexEnd ){
+    rc = sqlite3Config.mutex.xMutexEnd();
   }
 
 #ifdef SQLITE_DEBUG
@@ -83,15 +83,15 @@ sqlite3_mutex *sqlite3_mutex_alloc(int id){
 #ifndef SQLITE_OMIT_AUTOINIT
   if( sqlite3_initialize() ) return 0;
 #endif
-  return sqlite3GlobalConfig.mutex.xMutexAlloc(id);
+  return sqlite3Config.mutex.xMutexAlloc(id);
 }
 
 sqlite3_mutex *sqlite3MutexAlloc(int id){
-  if( !sqlite3GlobalConfig.bCoreMutex ){
+  if( !sqlite3Config.bCoreMutex ){
     return 0;
   }
   assert( GLOBAL(int, mutexIsInit) );
-  return sqlite3GlobalConfig.mutex.xMutexAlloc(id);
+  return sqlite3Config.mutex.xMutexAlloc(id);
 }
 
 /*
@@ -99,7 +99,7 @@ sqlite3_mutex *sqlite3MutexAlloc(int id){
 */
 void sqlite3_mutex_free(sqlite3_mutex *p){
   if( p ){
-    sqlite3GlobalConfig.mutex.xMutexFree(p);
+    sqlite3Config.mutex.xMutexFree(p);
   }
 }
 
@@ -109,7 +109,7 @@ void sqlite3_mutex_free(sqlite3_mutex *p){
 */
 void sqlite3_mutex_enter(sqlite3_mutex *p){
   if( p ){
-    sqlite3GlobalConfig.mutex.xMutexEnter(p);
+    sqlite3Config.mutex.xMutexEnter(p);
   }
 }
 
@@ -120,7 +120,7 @@ void sqlite3_mutex_enter(sqlite3_mutex *p){
 int sqlite3_mutex_try(sqlite3_mutex *p){
   int rc = SQLITE_OK;
   if( p ){
-    return sqlite3GlobalConfig.mutex.xMutexTry(p);
+    return sqlite3Config.mutex.xMutexTry(p);
   }
   return rc;
 }
@@ -133,7 +133,7 @@ int sqlite3_mutex_try(sqlite3_mutex *p){
 */
 void sqlite3_mutex_leave(sqlite3_mutex *p){
   if( p ){
-    sqlite3GlobalConfig.mutex.xMutexLeave(p);
+    sqlite3Config.mutex.xMutexLeave(p);
   }
 }
 
@@ -143,10 +143,10 @@ void sqlite3_mutex_leave(sqlite3_mutex *p){
 ** intended for use inside assert() statements.
 */
 int sqlite3_mutex_held(sqlite3_mutex *p){
-  return p==0 || sqlite3GlobalConfig.mutex.xMutexHeld(p);
+  return p==0 || sqlite3Config.mutex.xMutexHeld(p);
 }
 int sqlite3_mutex_notheld(sqlite3_mutex *p){
-  return p==0 || sqlite3GlobalConfig.mutex.xMutexNotheld(p);
+  return p==0 || sqlite3Config.mutex.xMutexNotheld(p);
 }
 #endif
 

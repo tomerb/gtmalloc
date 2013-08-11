@@ -2,10 +2,9 @@
 #define __STOPWATCH_H__
 
 #include "windows.h"
-#include "common.h"
-#include "AverageCalculator.h"
 #include "Timestamp.h"
 #include <string>
+#include <list>
 #include <set>
 
 struct _Lap
@@ -14,7 +13,7 @@ struct _Lap
 	Timestamp		m_Elapsed;
 };
 
-class CORE_EXT_API StopWatch
+class StopWatch
 {
 	public:
 
@@ -49,7 +48,7 @@ class CORE_EXT_API StopWatch
 		std::list<_Lap>			m_Laps;
 };	
 
-class CORE_EXT_API AutoStopWatch
+class AutoStopWatch
 {
 	public:
 

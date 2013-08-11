@@ -662,7 +662,7 @@ struct BusyHandler {
 #else
   #define SQLITE_WSD 
   #define GLOBAL(t,v) v
-  #define sqlite3GlobalConfig sqlite3Config
+  //#define sqlite3GlobalConfig sqlite3Config
 #endif
 
 /*

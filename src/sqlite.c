@@ -59,7 +59,26 @@ SQLITE_API int sqlite3_status(int op, int *pCurrent, int *pHighwater, int resetF
 ** behavior.
 */
 SQLITE_API int sqlite3_config(int op, ...){
-  return -1;
+	va_list ap;
+	va_start(ap, op);
+	switch (op)
+	{
+		case SQLITE_CONFIG_MALLOC: {
+			/* Specify an alternative malloc implementation */
+			sqlite3Config.m = *va_arg(ap, sqlite3_mem_methods*);
+			break;
+		}
+
+		case SQLITE_CONFIG_MEMSTATUS: {
+			/* Enable or disable the malloc status collection */
+			sqlite3Config.bMemstat = va_arg(ap, int);
+			break;
+		}
+	}
+
+	va_end(ap);
+
+	return -1;
 }
 
 SQLITE_API void sqlite3ValueSetStr(

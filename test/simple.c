@@ -3,7 +3,8 @@
 int main(void)
 {
 	void *p;
-
+	
+	sqlite3MutexInit();
     sqlite3MallocInit();
 
     p = sqlite3Malloc(256);

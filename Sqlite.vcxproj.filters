@@ -37,13 +37,25 @@
     <ClCompile Include="src\os_win.c">
       <Filter>Src</Filter>
     </ClCompile>
-    <ClCompile Include="src\sqlite.c">
-      <Filter>Header</Filter>
-    </ClCompile>
     <ClCompile Include="src\main.c">
       <Filter>Src</Filter>
     </ClCompile>
     <ClCompile Include="test\simple.c">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\StackWalker.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\StackWalkTest.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\StopWatch.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\sqlite.c">
+      <Filter>Src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Timestamp.cpp">
       <Filter>Src</Filter>
     </ClCompile>
   </ItemGroup>
@@ -75,6 +87,15 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="src\sqliteLimit.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\StackWalker.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\StopWatch.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Timestamp.h">
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>

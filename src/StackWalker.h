@@ -13,8 +13,8 @@ typedef unsigned long SIZE_T, *PSIZE_T;
 #endif
 #endif  // _MSC_VER < 1300
 
-class StackWalkerInternal;  // forward declaration
-
+// forward declaration
+class StackWalkerInternal;  
 
 class StackWalker
 {

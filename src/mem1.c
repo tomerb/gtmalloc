@@ -111,7 +111,7 @@ static void *sqlite3MemMalloc(int nByte){
 #ifdef SQLITE_MALLOCSIZE
   void *p = SQLITE_MALLOC( nByte );
   if( p==0 ){
-    testcase( sqlite3GlobalConfig.xLog!=0 );
+    testcase( sqlite3Config.xLog!=0 );
     sqlite3_log(SQLITE_NOMEM, "failed to allocate %u bytes of memory", nByte);
   }
   return p;
@@ -124,7 +124,7 @@ static void *sqlite3MemMalloc(int nByte){
     p[0] = nByte;
     p++;
   }else{
-    testcase( sqlite3GlobalConfig.xLog!=0 );
+    testcase( sqlite3Config.xLog!=0 );
     sqlite3_log(SQLITE_NOMEM, "failed to allocate %u bytes of memory", nByte);
   }
   return (void *)p;
@@ -180,7 +180,7 @@ static void *sqlite3MemRealloc(void *pPrior, int nByte){
 #ifdef SQLITE_MALLOCSIZE
   void *p = SQLITE_REALLOC(pPrior, nByte);
   if( p==0 ){
-    testcase( sqlite3GlobalConfig.xLog!=0 );
+    testcase( sqlite3Config.xLog!=0 );
     sqlite3_log(SQLITE_NOMEM,
       "failed memory resize %u to %u bytes",
       SQLITE_MALLOCSIZE(pPrior), nByte);
@@ -196,7 +196,7 @@ static void *sqlite3MemRealloc(void *pPrior, int nByte){
     p[0] = nByte;
     p++;
   }else{
-    testcase( sqlite3GlobalConfig.xLog!=0 );
+    testcase( sqlite3Config.xLog!=0 );
     sqlite3_log(SQLITE_NOMEM,
       "failed memory resize %u to %u bytes",
       sqlite3MemSize(pPrior), nByte);
@@ -260,7 +260,7 @@ static void sqlite3MemShutdown(void *NotUsed){
 ** This routine is the only routine in this file with external linkage.
 **
 ** Populate the low-level memory allocation function pointers in
-** sqlite3GlobalConfig.m with pointers to the routines in this file.
+** sqlite3Config.m with pointers to the routines in this file.
 */
 void sqlite3MemSetDefault(void){
   static const sqlite3_mem_methods defaultMethods = {

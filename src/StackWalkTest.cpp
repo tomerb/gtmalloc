@@ -4,6 +4,7 @@
 #include "StackWalker.h"
 #include "time.h"
 #include "stdio.h"
+#include "windows.h"
 
 StackWalker sw;
 

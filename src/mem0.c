@@ -40,7 +40,7 @@ static void sqlite3MemShutdown(void *NotUsed){ return; }
 ** This routine is the only routine in this file with external linkage.
 **
 ** Populate the low-level memory allocation function pointers in
-** sqlite3GlobalConfig.m with pointers to the routines in this file.
+** sqlite3Config.m with pointers to the routines in this file.
 */
 void sqlite3MemSetDefault(void){
   static const sqlite3_mem_methods defaultMethods = {

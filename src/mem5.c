@@ -185,7 +185,7 @@ static void memsys5Link(int i, int iLogsize){
 /*
 ** If the STATIC_MEM mutex is not already held, obtain it now. The mutex
 ** will already be held (obtained by code in malloc.c) if
-** sqlite3GlobalConfig.bMemStat is true.
+** sqlite3Config.bMemStat is true.
 */
 static void memsys5Enter(void){
   sqlite3_mutex_enter(mem5.mutex);
@@ -269,7 +269,7 @@ static void *memsys5MallocUnsafe(int nByte){
   */
   for(iBin=iLogsize; mem5.aiFreelist[iBin]<0 && iBin<=LOGMAX; iBin++){}
   if( iBin>LOGMAX ){
-    testcase( sqlite3GlobalConfig.xLog!=0 );
+    testcase( sqlite3Config.xLog!=0 );
     sqlite3_log(SQLITE_NOMEM, "failed to allocate %u bytes", nByte);
     return 0;
   }
@@ -469,12 +469,12 @@ static int memsys5Init(void *NotUsed){
   */
   assert( (sizeof(Mem5Link)&(sizeof(Mem5Link)-1))==0 );
 
-  nByte = sqlite3GlobalConfig.nHeap;
-  zByte = (u8*)sqlite3GlobalConfig.pHeap;
+  nByte = sqlite3Config.nHeap;
+  zByte = (u8*)sqlite3Config.pHeap;
   assert( zByte!=0 );  /* sqlite3_config() does not allow otherwise */
 
-  /* boundaries on sqlite3GlobalConfig.mnReq are enforced in sqlite3_config() */
-  nMinLog = memsys5Log(sqlite3GlobalConfig.mnReq);
+  /* boundaries on sqlite3Config.mnReq are enforced in sqlite3_config() */
+  nMinLog = memsys5Log(sqlite3Config.mnReq);
   mem5.szAtom = (1<<nMinLog);
   while( (int)sizeof(Mem5Link)>mem5.szAtom ){
     mem5.szAtom = mem5.szAtom << 1;
@@ -500,7 +500,7 @@ static int memsys5Init(void *NotUsed){
   }
 
   /* If a mutex is required for normal operation, allocate one */
-  if( sqlite3GlobalConfig.bMemstat==0 ){
+  if( sqlite3Config.bMemstat==0 ){
     mem5.mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MEM);
   }
 
@@ -576,6 +576,20 @@ const sqlite3_mem_methods *sqlite3MemGetMemsys5(void){
      0
   };
   return &memsys5Methods;
+}
+
+void sqlite3MemSetDefault(void){
+	static const sqlite3_mem_methods defaultMethods = {
+		memsys5Malloc,
+		memsys5Free,
+		memsys5Realloc,
+		memsys5Size,
+		memsys5Roundup,
+		memsys5Init,
+		memsys5Shutdown,
+		0
+	};
+	sqlite3_config(SQLITE_CONFIG_MALLOC, &defaultMethods);
 }
 
 #endif /* SQLITE_ENABLE_MEMSYS5 */
