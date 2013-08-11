@@ -125,8 +125,6 @@
     <ClCompile Include="src\StackWalkTest.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="src\StopWatch.cpp" />
-    <ClCompile Include="src\Timestamp.cpp" />
     <ClCompile Include="test\simple.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
     </ClCompile>
@@ -140,8 +138,6 @@
     <ClInclude Include="src\sqliteInt.h" />
     <ClInclude Include="src\sqliteLimit.h" />
     <ClInclude Include="src\StackWalker.h" />
-    <ClInclude Include="src\StopWatch.h" />
-    <ClInclude Include="src\Timestamp.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
