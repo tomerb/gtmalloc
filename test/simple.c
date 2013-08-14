@@ -2,14 +2,17 @@
 
 int main(void)
 {
-	void *p;
-	
+	void *pPreAllocation = (char*)malloc(10000);
+	void *pNew = 0;
+
+	sqlite3_config(SQLITE_CONFIG_HEAP, pPreAllocation, 10000, 10);
+
 	sqlite3MutexInit();
     sqlite3MallocInit();
 
-    p = sqlite3Malloc(256);
+    pNew = sqlite3Malloc(256);
 
-    if (!p)
+    if (!pNew)
     {
         printf("Malloc failed\n");
 
@@ -18,7 +21,8 @@ int main(void)
         return -1;
     }
 
-    sqlite3_free(p);
+    sqlite3_free(pNew);
+    free(pPreAllocation);
 
     sqlite3MallocEnd();
 

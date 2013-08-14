@@ -74,6 +74,32 @@ SQLITE_API int sqlite3_config(int op, ...){
 			sqlite3Config.bMemstat = va_arg(ap, int);
 			break;
 		}
+
+		case SQLITE_CONFIG_HEAP: {
+		  /* Designate a buffer for heap memory space */
+		  sqlite3Config.pHeap = va_arg(ap, void*);
+		  sqlite3Config.nHeap = va_arg(ap, int);
+		  sqlite3Config.mnReq = va_arg(ap, int);
+
+		  if( sqlite3Config.mnReq<1 ){
+			sqlite3Config.mnReq = 1;
+		  }else if( sqlite3Config.mnReq>(1<<12) ){
+			/* cap min request size at 2^12 */
+			sqlite3Config.mnReq = (1<<12);
+		  }
+
+		  if( sqlite3Config.pHeap==0 ){
+			/* If the heap pointer is NULL, then restore the malloc implementation
+			** back to NULL pointers too.  This will cause the malloc to go
+			** back to its default implementation when sqlite3_initialize() is
+			** run.
+			*/
+			memset(&sqlite3Config.m, 0, sizeof(sqlite3Config.m));
+		  }else{
+			sqlite3Config.m = *sqlite3MemGetMemsys5();
+		  }
+		  break;
+		}
 	}
 
 	va_end(ap);
