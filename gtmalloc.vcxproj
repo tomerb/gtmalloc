@@ -114,6 +114,7 @@
     </ClCompile>
     <ClCompile Include="src\os_win.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="src\printf.c">
       <CompileAs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">CompileAsC</CompileAs>
@@ -134,9 +135,7 @@
     <ClInclude Include="src\mutex.h" />
     <ClInclude Include="src\os.h" />
     <ClInclude Include="src\os_common.h" />
-    <ClInclude Include="src\sqlite3ext.h" />
     <ClInclude Include="src\sqliteInt.h" />
-    <ClInclude Include="src\sqliteLimit.h" />
     <ClInclude Include="src\StackWalker.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

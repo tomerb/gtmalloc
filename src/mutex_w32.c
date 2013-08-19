@@ -109,7 +109,7 @@ static int winMutex_isInit = 0;
 */
 static long winMutex_lock = 0;
 
-void sqlite3_win32_sleep(DWORD milliseconds); /* os_win.c */
+void sqlite3_win32_sleep(long milliseconds); /* os_win.c */
 
 static int winMutexInit(void){ 
   /* The first to increment to 1 does actual initialization */
@@ -230,7 +230,9 @@ static sqlite3_mutex *winMutexAlloc(int iType){
 */
 static void winMutexFree(sqlite3_mutex *p){
   assert( p );
+  #ifdef SQLITE_DEBUG
   assert( p->nRef==0 && p->owner==0 );
+  #endif // SQLITE_DEBUG
   assert( p->id==SQLITE_MUTEX_FAST || p->id==SQLITE_MUTEX_RECURSIVE );
   DeleteCriticalSection(&p->mutex);
   sqlite3_free(p);
@@ -267,7 +269,9 @@ static int winMutexTry(sqlite3_mutex *p){
   DWORD tid = GetCurrentThreadId(); 
 #endif
   int rc = SQLITE_BUSY;
+  #ifdef SQLITE_DEBUG
   assert( p->id==SQLITE_MUTEX_RECURSIVE || winMutexNotheld2(p, tid) );
+  #endif //SQLITE_DEBUG
   /*
   ** The sqlite3_mutex_try() routine is very rarely used, and when it
   ** is used it is merely an optimization.  So it is OK for it to always

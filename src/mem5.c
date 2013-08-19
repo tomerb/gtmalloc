@@ -89,7 +89,7 @@ struct Mem5Link {
 ** static variables organized and to reduce namespace pollution
 ** when this module is combined with other in the amalgamation.
 */
-static SQLITE_WSD struct Mem5Global {
+static struct Mem5Global {
   /*
   ** Memory available for allocation
   */
@@ -130,11 +130,6 @@ static SQLITE_WSD struct Mem5Global {
 } mem5;
 
 /*
-** Access the static variable through a macro for SQLITE_OMIT_WSD
-*/
-#define mem5 GLOBAL(struct Mem5Global, mem5)
-
-/*
 ** Assuming mem5.zPool is divided up into an array of Mem5Link
 ** structures, return a pointer to the idx-th such lik.
 */
@@ -168,7 +163,9 @@ static void memsys5Unlink(int i, int iLogsize){
 */
 static void memsys5Link(int i, int iLogsize){
   int x;
+  #ifndef NDEBUG
   assert( sqlite3_mutex_held(mem5.mutex) );
+  #endif //NDEBUG
   assert( i>=0 && i<mem5.nBlock );
   assert( iLogsize>=0 && iLogsize<=LOGMAX );
   assert( (mem5.aCtrl[i] & CTRL_LOGSIZE)==iLogsize );
@@ -357,7 +354,7 @@ static void memsys5FreeUnsafe(void *pOld){
 ** Allocate nBytes of memory
 */
 static void *memsys5Malloc(int nBytes){
-  sqlite3_int64 *p = 0;
+  sqlite_int64 *p = 0;
   if( nBytes>0 ){
     memsys5Enter();
     p = memsys5MallocUnsafe(nBytes);

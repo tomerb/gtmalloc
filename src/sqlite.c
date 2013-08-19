@@ -28,11 +28,6 @@
 #endif
 
 
-SQLITE_API int sqlite3_initialize(void){
-
-	return -1;
-}
-
 
 int sqlite3StatusValue(int s){
 	return -1;
@@ -48,6 +43,9 @@ SQLITE_API int sqlite3_status(int op, int *pCurrent, int *pHighwater, int resetF
 	return -1;
 }
 
+void sqlite3_win32_sleep(long milliseconds){
+
+}
 
 /*
 ** This API allows applications to modify the global configuration of

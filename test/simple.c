@@ -1,4 +1,6 @@
-#include "..\Src\sqliteInt.h"
+
+#include "..\src\sqliteInt.h"
+#include <stdio.h>
 
 int main(void)
 {
@@ -7,8 +9,6 @@ int main(void)
 
 	sqlite3_config(SQLITE_CONFIG_HEAP, pPreAllocation, 10000, 10);
 
-	sqlite3MutexInit();
-    sqlite3MallocInit();
 
     pNew = sqlite3Malloc(256);
 

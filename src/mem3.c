@@ -497,7 +497,7 @@ static int memsys3Roundup(int n){
 ** Allocate nBytes of memory.
 */
 static void *memsys3Malloc(int nBytes){
-  sqlite3_int64 *p;
+  sqlite_int64 *p;
   assert( nBytes>0 );          /* malloc.c filters out 0 byte requests */
   memsys3Enter();
   p = memsys3MallocUnsafe(nBytes);

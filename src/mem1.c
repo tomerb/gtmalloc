@@ -116,7 +116,7 @@ static void *sqlite3MemMalloc(int nByte){
   }
   return p;
 #else
-  sqlite3_int64 *p;
+  sqlite_int64 *p;
   assert( nByte>0 );
   nByte = ROUND8(nByte);
   p = SQLITE_MALLOC( nByte+8 );
@@ -143,7 +143,7 @@ static void sqlite3MemFree(void *pPrior){
 #ifdef SQLITE_MALLOCSIZE
   SQLITE_FREE(pPrior);
 #else
-  sqlite3_int64 *p = (sqlite3_int64*)pPrior;
+  sqlite_int64 *p = (sqlite_int64*)pPrior;
   assert( pPrior!=0 );
   p--;
   SQLITE_FREE(p);
@@ -158,9 +158,9 @@ static int sqlite3MemSize(void *pPrior){
 #ifdef SQLITE_MALLOCSIZE
   return pPrior ? (int)SQLITE_MALLOCSIZE(pPrior) : 0;
 #else
-  sqlite3_int64 *p;
+  sqlite_int64 *p;
   if( pPrior==0 ) return 0;
-  p = (sqlite3_int64*)pPrior;
+  p = (sqlite_int64*)pPrior;
   p--;
   return (int)p[0];
 #endif
@@ -187,7 +187,7 @@ static void *sqlite3MemRealloc(void *pPrior, int nByte){
   }
   return p;
 #else
-  sqlite3_int64 *p = (sqlite3_int64*)pPrior;
+  sqlite_int64 *p = (sqlite_int64*)pPrior;
   assert( pPrior!=0 && nByte>0 );
   assert( nByte==ROUND8(nByte) ); /* EV: R-46199-30249 */
   p--;

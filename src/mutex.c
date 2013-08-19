@@ -15,17 +15,6 @@
 */
 #include "sqliteInt.h"
 
-#if defined(SQLITE_DEBUG) && !defined(SQLITE_MUTEX_OMIT)
-/*
-** For debugging purposes, record when the mutex subsystem is initialized
-** and uninitialized so that we can assert() if there is an attempt to
-** allocate a mutex while the system is uninitialized.
-*/
-static SQLITE_WSD int mutexIsInit = 0;
-#endif /* SQLITE_DEBUG */
-
-
-#ifndef SQLITE_MUTEX_OMIT
 /*
 ** Initialize the mutex system.
 */
@@ -45,10 +34,6 @@ int sqlite3MutexInit(void){
     }else{
       pFrom = sqlite3NoopMutex();
     }
-    memcpy(pTo, pFrom, offsetof(sqlite3_mutex_methods, xMutexAlloc));
-    memcpy(&pTo->xMutexFree, &pFrom->xMutexFree,
-           sizeof(*pTo) - offsetof(sqlite3_mutex_methods, xMutexFree));
-    pTo->xMutexAlloc = pFrom->xMutexAlloc;
   }
   rc = sqlite3Config.mutex.xMutexInit();
 
@@ -80,9 +65,6 @@ int sqlite3MutexEnd(void){
 ** Retrieve a pointer to a static mutex or allocate a new dynamic one.
 */
 sqlite3_mutex *sqlite3_mutex_alloc(int id){
-#ifndef SQLITE_OMIT_AUTOINIT
-  if( sqlite3_initialize() ) return 0;
-#endif
   return sqlite3Config.mutex.xMutexAlloc(id);
 }
 
@@ -90,7 +72,6 @@ sqlite3_mutex *sqlite3MutexAlloc(int id){
   if( !sqlite3Config.bCoreMutex ){
     return 0;
   }
-  assert( GLOBAL(int, mutexIsInit) );
   return sqlite3Config.mutex.xMutexAlloc(id);
 }
 
@@ -149,5 +130,3 @@ int sqlite3_mutex_notheld(sqlite3_mutex *p){
   return p==0 || sqlite3Config.mutex.xMutexNotheld(p);
 }
 #endif
-
-#endif /* !defined(SQLITE_MUTEX_OMIT) */

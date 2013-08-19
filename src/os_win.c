@@ -154,9 +154,9 @@ struct winFile {
   int nFetchOut;                /* Number of outstanding xFetch references */
   HANDLE hMap;                  /* Handle for accessing memory mapping */
   void *pMapRegion;             /* Area memory mapped */
-  sqlite3_int64 mmapSize;       /* Usable size of mapped region */
-  sqlite3_int64 mmapSizeActual; /* Actual size of mapped region */
-  sqlite3_int64 mmapSizeMax;    /* Configured FCNTL_MMAP_SIZE value */
+  sqlite_int64 mmapSize;       /* Usable size of mapped region */
+  sqlite_int64 mmapSizeActual; /* Actual size of mapped region */
+  sqlite_int64 mmapSizeMax;    /* Configured FCNTL_MMAP_SIZE value */
 #endif
 };
 
@@ -1545,7 +1545,7 @@ struct tm *__cdecl localtime(const time_t *t)
   static struct tm y;
   FILETIME uTm, lTm;
   SYSTEMTIME pTm;
-  sqlite3_int64 t64;
+  sqlite_int64 t64;
   t64 = *t;
   t64 = (t64 + 11644473600)*10000000;
   uTm.dwLowDateTime = (DWORD)(t64 & 0xFFFFFFFF);
@@ -1924,7 +1924,7 @@ static BOOL winUnlockFile(
 ** argument to offset iOffset within the file. If successful, return 0. 
 ** Otherwise, set pFile->lastErrno and return non-zero.
 */
-static int seekWinFile(winFile *pFile, sqlite3_int64 iOffset){
+static int seekWinFile(winFile *pFile, sqlite_int64 iOffset){
 #if !SQLITE_OS_WINRT
   LONG upperBits;                 /* Most sig. 32 bits of new offset */
   LONG lowerBits;                 /* Least sig. 32 bits of new offset */
@@ -2050,7 +2050,7 @@ static int winRead(
   sqlite3_file *id,          /* File to read from */
   void *pBuf,                /* Write content into this buffer */
   int amt,                   /* Number of bytes to read */
-  sqlite3_int64 offset       /* Begin reading at this offset */
+  sqlite_int64 offset       /* Begin reading at this offset */
 ){
 #if !SQLITE_OS_WINCE
   OVERLAPPED overlapped;          /* The offset for ReadFile. */
@@ -2124,7 +2124,7 @@ static int winWrite(
   sqlite3_file *id,               /* File to write into */
   const void *pBuf,               /* The bytes to be written */
   int amt,                        /* Number of bytes to write */
-  sqlite3_int64 offset            /* Offset into the file to begin writing at */
+  sqlite_int64 offset            /* Offset into the file to begin writing at */
 ){
   int rc = 0;                     /* True if error has occurred, else false */
   winFile *pFile = (winFile*)id;  /* File handle */
@@ -2223,7 +2223,7 @@ static int winWrite(
 /*
 ** Truncate an open file to a specified size
 */
-static int winTruncate(sqlite3_file *id, sqlite3_int64 nByte){
+static int winTruncate(sqlite3_file *id, sqlite_int64 nByte){
   winFile *pFile = (winFile*)id;  /* File handle object */
   int rc = SQLITE_OK;             /* Return code for this function */
   DWORD lastErrno;
@@ -2343,7 +2343,7 @@ static int winSync(sqlite3_file *id, int flags){
 /*
 ** Determine the current size of a file in bytes
 */
-static int winFileSize(sqlite3_file *id, sqlite3_int64 *pSize){
+static int winFileSize(sqlite3_file *id, sqlite_int64 *pSize){
   winFile *pFile = (winFile*)id;
   int rc = SQLITE_OK;
 
@@ -2371,7 +2371,7 @@ static int winFileSize(sqlite3_file *id, sqlite3_int64 *pSize){
     DWORD lastErrno;
 
     lowerBits = osGetFileSize(pFile->h, &upperBits);
-    *pSize = (((sqlite3_int64)upperBits)<<32) + lowerBits;
+    *pSize = (((sqlite_int64)upperBits)<<32) + lowerBits;
     if(   (lowerBits == INVALID_FILE_SIZE)
        && ((lastErrno = osGetLastError())!=NO_ERROR) ){
       pFile->lastErrno = lastErrno;
@@ -3277,7 +3277,7 @@ static int winShmMap(
   if( pShmNode->nRegion<=iRegion ){
     struct ShmRegion *apNew;           /* New aRegion[] array */
     int nByte = (iRegion+1)*szRegion;  /* Minimum required file size */
-    sqlite3_int64 sz;                  /* Current size of wal-index file */
+    sqlite_int64 sz;                  /* Current size of wal-index file */
 
     pShmNode->szRegion = szRegion;
 
@@ -3442,8 +3442,8 @@ static int winUnmapfile(winFile *pFile){
 ** recreated as a result of outstanding references) or an SQLite error
 ** code otherwise.
 */
-static int winMapfile(winFile *pFd, sqlite3_int64 nByte){
-  sqlite3_int64 nMap = nByte;
+static int winMapfile(winFile *pFd, sqlite_int64 nByte){
+  sqlite_int64 nMap = nByte;
   int rc;
 
   assert( nMap>=0 || pFd->nFetchOut==0 );
@@ -3463,7 +3463,7 @@ static int winMapfile(winFile *pFd, sqlite3_int64 nByte){
   if( nMap>pFd->mmapSizeMax ){
     nMap = pFd->mmapSizeMax;
   }
-  nMap &= ~(sqlite3_int64)(winSysInfo.dwPageSize - 1);
+  nMap &= ~(sqlite_int64)(winSysInfo.dwPageSize - 1);
  
   if( nMap==0 && pFd->mmapSize>0 ){
     winUnmapfile(pFd);
@@ -3502,7 +3502,7 @@ static int winMapfile(winFile *pFd, sqlite3_int64 nByte){
 #if SQLITE_OS_WINRT
     pNew = osMapViewOfFileFromApp(pFd->hMap, flags, 0, nMap);
 #else
-    assert( sizeof(SIZE_T)==sizeof(sqlite3_int64) || nMap<=0xffffffff );
+    assert( sizeof(SIZE_T)==sizeof(sqlite_int64) || nMap<=0xffffffff );
     pNew = osMapViewOfFile(pFd->hMap, flags, 0, 0, (SIZE_T)nMap);
 #endif
     if( pNew==NULL ){
@@ -4005,19 +4005,19 @@ int sqlite3_current_time = 0;  /* Fake system time in seconds since 1970. */
 ** On success, return SQLITE_OK.  Return SQLITE_ERROR if the time and date 
 ** cannot be found.
 */
-static int winCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *piNow){
+static int winCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite_int64 *piNow){
   /* FILETIME structure is a 64-bit value representing the number of 
      100-nanosecond intervals since January 1, 1601 (= JD 2305813.5). 
   */
   FILETIME ft;
-  static const sqlite3_int64 winFiletimeEpoch = 23058135*(sqlite3_int64)8640000;
+  static const sqlite_int64 winFiletimeEpoch = 23058135*(sqlite_int64)8640000;
 #ifdef SQLITE_TEST
-  static const sqlite3_int64 unixEpoch = 24405875*(sqlite3_int64)8640000;
+  static const sqlite_int64 unixEpoch = 24405875*(sqlite_int64)8640000;
 #endif
   /* 2^32 - to avoid use of LL and warnings in gcc */
-  static const sqlite3_int64 max32BitValue = 
-      (sqlite3_int64)2000000000 + (sqlite3_int64)2000000000 +
-      (sqlite3_int64)294967296;
+  static const sqlite_int64 max32BitValue = 
+      (sqlite_int64)2000000000 + (sqlite_int64)2000000000 +
+      (sqlite_int64)294967296;
 
 #if SQLITE_OS_WINCE
   SYSTEMTIME time;
@@ -4031,12 +4031,12 @@ static int winCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *piNow){
 #endif
 
   *piNow = winFiletimeEpoch +
-            ((((sqlite3_int64)ft.dwHighDateTime)*max32BitValue) + 
-               (sqlite3_int64)ft.dwLowDateTime)/(sqlite3_int64)10000;
+            ((((sqlite_int64)ft.dwHighDateTime)*max32BitValue) + 
+               (sqlite_int64)ft.dwLowDateTime)/(sqlite_int64)10000;
 
 #ifdef SQLITE_TEST
   if( sqlite3_current_time ){
-    *piNow = 1000*(sqlite3_int64)sqlite3_current_time + unixEpoch;
+    *piNow = 1000*(sqlite_int64)sqlite3_current_time + unixEpoch;
   }
 #endif
   UNUSED_PARAMETER(pVfs);
@@ -4050,7 +4050,7 @@ static int winCurrentTimeInt64(sqlite3_vfs *pVfs, sqlite3_int64 *piNow){
 */
 static int winCurrentTime(sqlite3_vfs *pVfs, double *prNow){
   int rc;
-  sqlite3_int64 i;
+  sqlite_int64 i;
   rc = winCurrentTimeInt64(pVfs, &i);
   if( !rc ){
     *prNow = i/86400000.0;
