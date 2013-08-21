@@ -421,7 +421,7 @@ static void *memsys5Realloc(void *pPrior, int nBytes){
 ** or 1073741824 bytes.
 */
 static int memsys5Roundup(int n){
-  int iFullSz;
+  int iFullSz = 1;
   if( n > 0x40000000 ) return 0;
   for(iFullSz=mem5.szAtom; iFullSz<n; iFullSz *= 2);
   return iFullSz;

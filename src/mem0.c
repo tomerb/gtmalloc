@@ -10,8 +10,8 @@
 **
 *************************************************************************
 **
-** This file contains a no-op memory allocation drivers for use when
-** SQLITE_ZERO_MALLOC is defined.  The allocation drivers implemented
+** This file  a no-op memory allocation drivers for use when
+** SQLITE_ZERO_MALLcontainsOC is defined.  The allocation drivers implemented
 ** here always fail.  SQLite will not operate with these drivers.  These
 ** are merely placeholders.  Real drivers must be substituted using
 ** sqlite3_config() before SQLite will operate.

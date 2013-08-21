@@ -28,6 +28,9 @@
 #endif
 
 
+void sqlite3_log(int iErrCode, const char *zFormat, ...){
+
+}
 
 int sqlite3StatusValue(int s){
 	return -1;
@@ -96,6 +99,8 @@ SQLITE_API int sqlite3_config(int op, ...){
 		  }else{
 			sqlite3Config.m = *sqlite3MemGetMemsys5();
 		  }
+
+		  sqlite3Config.m.xInit(0);
 		  break;
 		}
 	}
