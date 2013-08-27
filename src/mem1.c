@@ -48,7 +48,6 @@
 ** used when no other memory allocator is specified using compile-time
 ** macros.
 */
-#ifdef SQLITE_SYSTEM_MALLOC
 
 /*
 ** The MSVCRT has malloc_usable_size() but it is called _msize().
@@ -262,7 +261,7 @@ static void sqlite3MemShutdown(void *NotUsed){
 ** Populate the low-level memory allocation function pointers in
 ** sqlite3Config.m with pointers to the routines in this file.
 */
-void sqlite3MemSetDefault(void){
+void sqlite3MemSetDefault1(void){
   static const sqlite3_mem_methods defaultMethods = {
      sqlite3MemMalloc,
      sqlite3MemFree,
@@ -276,4 +275,3 @@ void sqlite3MemSetDefault(void){
   sqlite3_config(SQLITE_CONFIG_MALLOC, &defaultMethods);
 }
 
-#endif /* SQLITE_SYSTEM_MALLOC */

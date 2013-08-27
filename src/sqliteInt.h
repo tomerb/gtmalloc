@@ -35,7 +35,7 @@ void *sqlite3Malloc(int n);
 void sqlite3MallocEnd(void);
 void sqlite3_free(void *p);
 void sqlite3_log(int iErrCode, const char *zFormat, ...);
-void sqlite3MemSetDefault(void);
+void sqlite3MemSetDefault5(void);
 
 
 int sqlite3StatusValue(int s);
@@ -714,6 +714,11 @@ typedef struct sqlite3_mutex_methods sqlite3_mutex_methods;
 #endif
 #define MEMTYPE_HEAP       0x01  /* General heap allocations */
 
+#define MEMTYPE_HEAP       0x01  /* General heap allocations */
+#define MEMTYPE_LOOKASIDE  0x02  /* Might have been lookaside memory */
+#define MEMTYPE_SCRATCH    0x04  /* Scratch allocations */
+#define MEMTYPE_PCACHE     0x08  /* Page cache allocations */
+#define MEMTYPE_DB         0x10  /* Uses sqlite3DbMalloc, not sqlite_malloc */
 
 /*
 ** Structure containing global configuration data for the SQLite library.

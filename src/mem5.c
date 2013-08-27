@@ -575,7 +575,7 @@ const sqlite3_mem_methods *sqlite3MemGetMemsys5(void){
   return &memsys5Methods;
 }
 
-void sqlite3MemSetDefault(void){
+void sqlite3MemSetDefault5(void){
 	static const sqlite3_mem_methods defaultMethods = {
 		memsys5Malloc,
 		memsys5Free,

@@ -39,6 +39,8 @@
 #endif
 #include <stdio.h>
 
+#include "sqliteInt.h"
+
 /*
 ** Each memory allocation looks like this:
 **
@@ -361,7 +363,7 @@ static void *sqlite3MemRealloc(void *pPrior, int nByte){
 ** Populate the low-level memory allocation function pointers in
 ** sqlite3Config.m with pointers to the routines in this file.
 */
-void sqlite3MemSetDefault(void){
+void sqlite3MemSetDefault2(void){
   static const sqlite3_mem_methods defaultMethods = {
      sqlite3MemMalloc,
      sqlite3MemFree,
@@ -448,6 +450,22 @@ void sqlite3MemdebugBacktraceCallback(void (*xBacktrace)(int, int, void **)){
 }
 
 /*
+** Compute a string length that is limited to what can be stored in
+** lower 30 bits of a 32-bit signed integer.
+**
+** The value returned will never be negative.  Nor will it ever be greater
+** than the actual length of the string.  For very long strings (greater
+** than 1GiB) the value returned might be less than the true string length.
+*/
+static int sqlite3Strlen30(const char *z){
+  const char *z2 = z;
+  if( z==0 ) return 0;
+  while( *z2 ){ z2++; }
+  return 0x3fffffff & (int)(z2 - z);
+}
+
+
+/*
 ** Set the title string for subsequent allocations.
 */
 void sqlite3MemdebugSettitle(const char *zTitle){
@@ -525,4 +543,4 @@ int sqlite3MemdebugMallocCount(){
 }
 
 
-#endif /* SQLITE_MEMDEBUG */
+#endif //SQLITE_MEMDEBUG

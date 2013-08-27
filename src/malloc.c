@@ -154,7 +154,7 @@ void sqlite3_soft_heap_limit(int n){
 */
 int sqlite3MallocInit(void){
   if( sqlite3Config.m.xMalloc==0 ){
-    sqlite3MemSetDefault();
+    sqlite3MemSetDefault5();
   }
 
   memset(&mem0, 0, sizeof(mem0));

@@ -23,7 +23,6 @@
 ** used when no other memory allocator is specified using compile-time
 ** macros.
 */
-#ifdef SQLITE_ZERO_MALLOC
 
 /*
 ** No-op versions of all memory allocation routines
@@ -42,7 +41,7 @@ static void sqlite3MemShutdown(void *NotUsed){ return; }
 ** Populate the low-level memory allocation function pointers in
 ** sqlite3Config.m with pointers to the routines in this file.
 */
-void sqlite3MemSetDefault(void){
+void sqlite3MemSetDefault0(void){
   static const sqlite3_mem_methods defaultMethods = {
      sqlite3MemMalloc,
      sqlite3MemFree,
@@ -56,4 +55,3 @@ void sqlite3MemSetDefault(void){
   sqlite3_config(SQLITE_CONFIG_MALLOC, &defaultMethods);
 }
 
-#endif /* SQLITE_ZERO_MALLOC */
