@@ -25,8 +25,14 @@
 #define SQLITE_NOMEM			333
 #define SQLITE_CONFIG_HEAP		444
 
+#ifdef _WIN32
 #define sqlite_int64 __int64
 #define sqlite_uint64 unsigned __int64
+#else
+#include <inttypes.h>
+#define sqlite_int64 int64_t
+#define sqlite_uint64 uint64_t
+#endif
 
 void sqlite3_win32_sleep(long milliseconds);
 
