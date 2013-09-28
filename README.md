@@ -7,13 +7,13 @@ Features:
 
 1. Low fragmentation.
 2. Low metadata overhead, even on a system with mostly small allocations.
-3. Minimal locking. maybe we can leverage thread local storage or synchronization free containers.
-4. Self-learning mode. each additional run will allow the application to learn the allocation strategies and use it to optimize future runs.
-5. Efficient multi core support. closely related to (3).
+3. Minimal locking. Maybe we can leverage thread local storage or synchronization free containers.
+4. Self-learning mode. Each additional run will allow the application to learn the allocation strategies and use it to optimize future runs.
+5. Efficient multi core support. Closely related to (3).
 6. Memory leak detection.
 6. Support for C++ new.
 7. Logging support.
-8. User defined callbacks. for example: OnMemoryLimitReached, OnAllocation, etc.
+8. User defined callbacks. For example: OnMemoryLimitReached, OnAllocation, etc.
 9. Support user provided memory blocks.
 10. Statistics:
 	used memory
