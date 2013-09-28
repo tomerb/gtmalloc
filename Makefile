@@ -2,9 +2,9 @@ CC = gcc
 
 OBJ = $(SRC:.c=.o)
 
-CFLAGS = -Wall -g
+CFLAGS = -Wall -g -DSQLITE_ENABLE_MEMSYS5
 
-SRC = src/global.c src/hash.c src/btree.c src/pcache.c src/unit/os_unix.c src/mutex.c src/mutex_noop.c src/unit/mutex_unix.c src/malloc.c src/mem0.c src/mem1.c src/mem2.c src/mem3.c src/mem5.c src/printf.c src/sqlite.c src/util.c
+SRC = src/global.c src/hash.c src/pcache.c src/unix/os_unix.c src/mutex.c src/mutex_noop.c src/unix/mutex_unix.c src/malloc.c src/mem0.c src/mem1.c src/mem2.c src/mem5.c src/sqlite.c
 
 LIB = libgtmalloc.a
 

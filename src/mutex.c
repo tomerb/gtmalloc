@@ -20,21 +20,6 @@
 */
 int sqlite3MutexInit(void){ 
   int rc = SQLITE_OK;
-  if( !sqlite3Config.mutex.xMutexAlloc ){
-    /* If the xMutexAlloc method has not been set, then the user did not
-    ** install a mutex implementation via sqlite3_config() prior to 
-    ** sqlite3_initialize() being called. This block copies pointers to
-    ** the default implementation into the sqlite3Config structure.
-    */
-    sqlite3_mutex_methods const *pFrom;
-    sqlite3_mutex_methods *pTo = &sqlite3Config.mutex;
-
-    if( sqlite3Config.bCoreMutex ){
-      pFrom = sqlite3DefaultMutex();
-    }else{
-      pFrom = sqlite3NoopMutex();
-    }
-  }
   rc = sqlite3Config.mutex.xMutexInit();
 
 #ifdef SQLITE_DEBUG
