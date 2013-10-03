@@ -1,14 +1,13 @@
+#include "sqliteInt.h"
 
-#include "..\src\sqliteInt.h"
 #include <stdio.h>
 
 int main(void)
 {
-	void *pPreAllocation = (char*)malloc(10000);
-	void *pNew = 0;
+    void *pPreAllocation = (char*)malloc(1024);
+    void *pNew = 0;
 
-	sqlite3_config(SQLITE_CONFIG_HEAP, pPreAllocation, 10000, 10);
-
+    sqlite3_config(SQLITE_CONFIG_HEAP, pPreAllocation, 1024, 10);
 
     pNew = sqlite3Malloc(256);
 

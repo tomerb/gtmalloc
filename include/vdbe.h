@@ -161,7 +161,7 @@ typedef struct VdbeOpList VdbeOpList;
 ** The makefile scans the vdbe.c source file and creates the "opcodes.h"
 ** header file that defines a number for each opcode used by the VDBE.
 */
-//#include "opcodes.h"
+#include "opcodes.h"
 
 /*
 ** Prototypes for the VDBE interface.  See comments on the implementation

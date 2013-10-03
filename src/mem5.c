@@ -89,7 +89,7 @@ struct Mem5Link {
 ** static variables organized and to reduce namespace pollution
 ** when this module is combined with other in the amalgamation.
 */
-static struct Mem5Global {
+static SQLITE_WSD struct Mem5Global {
   /*
   ** Memory available for allocation
   */
@@ -130,6 +130,11 @@ static struct Mem5Global {
 } mem5;
 
 /*
+** Access the static variable through a macro for SQLITE_OMIT_WSD
+*/
+#define mem5 GLOBAL(struct Mem5Global, mem5)
+
+/*
 ** Assuming mem5.zPool is divided up into an array of Mem5Link
 ** structures, return a pointer to the idx-th such lik.
 */
@@ -163,9 +168,7 @@ static void memsys5Unlink(int i, int iLogsize){
 */
 static void memsys5Link(int i, int iLogsize){
   int x;
-  #ifndef NDEBUG
   assert( sqlite3_mutex_held(mem5.mutex) );
-  #endif //NDEBUG
   assert( i>=0 && i<mem5.nBlock );
   assert( iLogsize>=0 && iLogsize<=LOGMAX );
   assert( (mem5.aCtrl[i] & CTRL_LOGSIZE)==iLogsize );
@@ -182,7 +185,7 @@ static void memsys5Link(int i, int iLogsize){
 /*
 ** If the STATIC_MEM mutex is not already held, obtain it now. The mutex
 ** will already be held (obtained by code in malloc.c) if
-** sqlite3Config.bMemStat is true.
+** sqlite3GlobalConfig.bMemStat is true.
 */
 static void memsys5Enter(void){
   sqlite3_mutex_enter(mem5.mutex);
@@ -266,7 +269,7 @@ static void *memsys5MallocUnsafe(int nByte){
   */
   for(iBin=iLogsize; mem5.aiFreelist[iBin]<0 && iBin<=LOGMAX; iBin++){}
   if( iBin>LOGMAX ){
-    testcase( sqlite3Config.xLog!=0 );
+    testcase( sqlite3GlobalConfig.xLog!=0 );
     sqlite3_log(SQLITE_NOMEM, "failed to allocate %u bytes", nByte);
     return 0;
   }
@@ -354,7 +357,7 @@ static void memsys5FreeUnsafe(void *pOld){
 ** Allocate nBytes of memory
 */
 static void *memsys5Malloc(int nBytes){
-  sqlite_int64 *p = 0;
+  sqlite3_int64 *p = 0;
   if( nBytes>0 ){
     memsys5Enter();
     p = memsys5MallocUnsafe(nBytes);
@@ -421,7 +424,7 @@ static void *memsys5Realloc(void *pPrior, int nBytes){
 ** or 1073741824 bytes.
 */
 static int memsys5Roundup(int n){
-  int iFullSz = 1;
+  int iFullSz;
   if( n > 0x40000000 ) return 0;
   for(iFullSz=mem5.szAtom; iFullSz<n; iFullSz *= 2);
   return iFullSz;
@@ -466,12 +469,12 @@ static int memsys5Init(void *NotUsed){
   */
   assert( (sizeof(Mem5Link)&(sizeof(Mem5Link)-1))==0 );
 
-  nByte = sqlite3Config.nHeap;
-  zByte = (u8*)sqlite3Config.pHeap;
+  nByte = sqlite3GlobalConfig.nHeap;
+  zByte = (u8*)sqlite3GlobalConfig.pHeap;
   assert( zByte!=0 );  /* sqlite3_config() does not allow otherwise */
 
-  /* boundaries on sqlite3Config.mnReq are enforced in sqlite3_config() */
-  nMinLog = memsys5Log(sqlite3Config.mnReq);
+  /* boundaries on sqlite3GlobalConfig.mnReq are enforced in sqlite3_config() */
+  nMinLog = memsys5Log(sqlite3GlobalConfig.mnReq);
   mem5.szAtom = (1<<nMinLog);
   while( (int)sizeof(Mem5Link)>mem5.szAtom ){
     mem5.szAtom = mem5.szAtom << 1;
@@ -497,7 +500,7 @@ static int memsys5Init(void *NotUsed){
   }
 
   /* If a mutex is required for normal operation, allocate one */
-  if( sqlite3Config.bMemstat==0 ){
+  if( sqlite3GlobalConfig.bMemstat==0 ){
     mem5.mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MEM);
   }
 
@@ -573,20 +576,6 @@ const sqlite3_mem_methods *sqlite3MemGetMemsys5(void){
      0
   };
   return &memsys5Methods;
-}
-
-void sqlite3MemSetDefault5(void){
-	static const sqlite3_mem_methods defaultMethods = {
-		memsys5Malloc,
-		memsys5Free,
-		memsys5Realloc,
-		memsys5Size,
-		memsys5Roundup,
-		memsys5Init,
-		memsys5Shutdown,
-		0
-	};
-	sqlite3_config(SQLITE_CONFIG_MALLOC, &defaultMethods);
 }
 
 #endif /* SQLITE_ENABLE_MEMSYS5 */

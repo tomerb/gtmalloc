@@ -6,9 +6,9 @@ CFLAGS = -Wall -Werror -g
 
 SRC = simple.c
 
-LIBS = -L../src -lgtmalloc -lpthread
+LIBS = -L.. -lgtmalloc -lpthread -ldl
 
-INCLUDES = -I. -I../src
+INCLUDES = -I. -I../include -I../include/unix
 
 APP = simple_test
 

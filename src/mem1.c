@@ -48,6 +48,7 @@
 ** used when no other memory allocator is specified using compile-time
 ** macros.
 */
+#ifdef SQLITE_SYSTEM_MALLOC
 
 /*
 ** The MSVCRT has malloc_usable_size() but it is called _msize().
@@ -110,12 +111,12 @@ static void *sqlite3MemMalloc(int nByte){
 #ifdef SQLITE_MALLOCSIZE
   void *p = SQLITE_MALLOC( nByte );
   if( p==0 ){
-    testcase( sqlite3Config.xLog!=0 );
+    testcase( sqlite3GlobalConfig.xLog!=0 );
     sqlite3_log(SQLITE_NOMEM, "failed to allocate %u bytes of memory", nByte);
   }
   return p;
 #else
-  sqlite_int64 *p;
+  sqlite3_int64 *p;
   assert( nByte>0 );
   nByte = ROUND8(nByte);
   p = SQLITE_MALLOC( nByte+8 );
@@ -123,7 +124,7 @@ static void *sqlite3MemMalloc(int nByte){
     p[0] = nByte;
     p++;
   }else{
-    testcase( sqlite3Config.xLog!=0 );
+    testcase( sqlite3GlobalConfig.xLog!=0 );
     sqlite3_log(SQLITE_NOMEM, "failed to allocate %u bytes of memory", nByte);
   }
   return (void *)p;
@@ -142,7 +143,7 @@ static void sqlite3MemFree(void *pPrior){
 #ifdef SQLITE_MALLOCSIZE
   SQLITE_FREE(pPrior);
 #else
-  sqlite_int64 *p = (sqlite_int64*)pPrior;
+  sqlite3_int64 *p = (sqlite3_int64*)pPrior;
   assert( pPrior!=0 );
   p--;
   SQLITE_FREE(p);
@@ -157,9 +158,9 @@ static int sqlite3MemSize(void *pPrior){
 #ifdef SQLITE_MALLOCSIZE
   return pPrior ? (int)SQLITE_MALLOCSIZE(pPrior) : 0;
 #else
-  sqlite_int64 *p;
+  sqlite3_int64 *p;
   if( pPrior==0 ) return 0;
-  p = (sqlite_int64*)pPrior;
+  p = (sqlite3_int64*)pPrior;
   p--;
   return (int)p[0];
 #endif
@@ -179,14 +180,14 @@ static void *sqlite3MemRealloc(void *pPrior, int nByte){
 #ifdef SQLITE_MALLOCSIZE
   void *p = SQLITE_REALLOC(pPrior, nByte);
   if( p==0 ){
-    testcase( sqlite3Config.xLog!=0 );
+    testcase( sqlite3GlobalConfig.xLog!=0 );
     sqlite3_log(SQLITE_NOMEM,
       "failed memory resize %u to %u bytes",
       SQLITE_MALLOCSIZE(pPrior), nByte);
   }
   return p;
 #else
-  sqlite_int64 *p = (sqlite_int64*)pPrior;
+  sqlite3_int64 *p = (sqlite3_int64*)pPrior;
   assert( pPrior!=0 && nByte>0 );
   assert( nByte==ROUND8(nByte) ); /* EV: R-46199-30249 */
   p--;
@@ -195,7 +196,7 @@ static void *sqlite3MemRealloc(void *pPrior, int nByte){
     p[0] = nByte;
     p++;
   }else{
-    testcase( sqlite3Config.xLog!=0 );
+    testcase( sqlite3GlobalConfig.xLog!=0 );
     sqlite3_log(SQLITE_NOMEM,
       "failed memory resize %u to %u bytes",
       sqlite3MemSize(pPrior), nByte);
@@ -259,9 +260,9 @@ static void sqlite3MemShutdown(void *NotUsed){
 ** This routine is the only routine in this file with external linkage.
 **
 ** Populate the low-level memory allocation function pointers in
-** sqlite3Config.m with pointers to the routines in this file.
+** sqlite3GlobalConfig.m with pointers to the routines in this file.
 */
-void sqlite3MemSetDefault1(void){
+void sqlite3MemSetDefault(void){
   static const sqlite3_mem_methods defaultMethods = {
      sqlite3MemMalloc,
      sqlite3MemFree,
@@ -275,3 +276,4 @@ void sqlite3MemSetDefault1(void){
   sqlite3_config(SQLITE_CONFIG_MALLOC, &defaultMethods);
 }
 
+#endif /* SQLITE_SYSTEM_MALLOC */

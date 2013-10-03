@@ -39,8 +39,6 @@
 #endif
 #include <stdio.h>
 
-#include "sqliteInt.h"
-
 /*
 ** Each memory allocation looks like this:
 **
@@ -190,7 +188,7 @@ static int sqlite3MemSize(void *p){
 static int sqlite3MemInit(void *NotUsed){
   UNUSED_PARAMETER(NotUsed);
   assert( (sizeof(struct MemBlockHdr)&7) == 0 );
-  if( !sqlite3Config.bMemstat ){
+  if( !sqlite3GlobalConfig.bMemstat ){
     /* If memory status is enabled, then the malloc.c wrapper will already
     ** hold the STATIC_MEM mutex when the routines here are invoked. */
     mem.mutex = sqlite3MutexAlloc(SQLITE_MUTEX_STATIC_MEM);
@@ -304,7 +302,7 @@ static void sqlite3MemFree(void *pPrior){
   struct MemBlockHdr *pHdr;
   void **pBt;
   char *z;
-  assert( sqlite3Config.bMemstat || sqlite3Config.bCoreMutex==0 
+  assert( sqlite3GlobalConfig.bMemstat || sqlite3GlobalConfig.bCoreMutex==0 
        || mem.mutex!=0 );
   pHdr = sqlite3MemsysGetHeader(pPrior);
   pBt = (void**)pHdr;
@@ -361,9 +359,9 @@ static void *sqlite3MemRealloc(void *pPrior, int nByte){
 
 /*
 ** Populate the low-level memory allocation function pointers in
-** sqlite3Config.m with pointers to the routines in this file.
+** sqlite3GlobalConfig.m with pointers to the routines in this file.
 */
-void sqlite3MemSetDefault2(void){
+void sqlite3MemSetDefault(void){
   static const sqlite3_mem_methods defaultMethods = {
      sqlite3MemMalloc,
      sqlite3MemFree,
@@ -381,7 +379,7 @@ void sqlite3MemSetDefault2(void){
 ** Set the "type" of an allocation.
 */
 void sqlite3MemdebugSetType(void *p, u8 eType){
-  if( p && sqlite3Config.m.xMalloc==sqlite3MemMalloc ){
+  if( p && sqlite3GlobalConfig.m.xMalloc==sqlite3MemMalloc ){
     struct MemBlockHdr *pHdr;
     pHdr = sqlite3MemsysGetHeader(p);
     assert( pHdr->iForeGuard==FOREGUARD );
@@ -400,7 +398,7 @@ void sqlite3MemdebugSetType(void *p, u8 eType){
 */
 int sqlite3MemdebugHasType(void *p, u8 eType){
   int rc = 1;
-  if( p && sqlite3Config.m.xMalloc==sqlite3MemMalloc ){
+  if( p && sqlite3GlobalConfig.m.xMalloc==sqlite3MemMalloc ){
     struct MemBlockHdr *pHdr;
     pHdr = sqlite3MemsysGetHeader(p);
     assert( pHdr->iForeGuard==FOREGUARD );         /* Allocation is valid */
@@ -422,7 +420,7 @@ int sqlite3MemdebugHasType(void *p, u8 eType){
 */
 int sqlite3MemdebugNoType(void *p, u8 eType){
   int rc = 1;
-  if( p && sqlite3Config.m.xMalloc==sqlite3MemMalloc ){
+  if( p && sqlite3GlobalConfig.m.xMalloc==sqlite3MemMalloc ){
     struct MemBlockHdr *pHdr;
     pHdr = sqlite3MemsysGetHeader(p);
     assert( pHdr->iForeGuard==FOREGUARD );         /* Allocation is valid */
@@ -448,22 +446,6 @@ void sqlite3MemdebugBacktrace(int depth){
 void sqlite3MemdebugBacktraceCallback(void (*xBacktrace)(int, int, void **)){
   mem.xBacktrace = xBacktrace;
 }
-
-/*
-** Compute a string length that is limited to what can be stored in
-** lower 30 bits of a 32-bit signed integer.
-**
-** The value returned will never be negative.  Nor will it ever be greater
-** than the actual length of the string.  For very long strings (greater
-** than 1GiB) the value returned might be less than the true string length.
-*/
-static int sqlite3Strlen30(const char *z){
-  const char *z2 = z;
-  if( z==0 ) return 0;
-  while( *z2 ){ z2++; }
-  return 0x3fffffff & (int)(z2 - z);
-}
-
 
 /*
 ** Set the title string for subsequent allocations.
@@ -543,4 +525,4 @@ int sqlite3MemdebugMallocCount(){
 }
 
 
-#endif //SQLITE_MEMDEBUG
+#endif /* SQLITE_MEMDEBUG */
